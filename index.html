@@ -39,7 +39,7 @@
           border-radius: 2px;
         }
 
-        #starfield {
+        #keycapfield {
             width: 100%;
             height: 100%;
             z-index: -1;
@@ -75,7 +75,7 @@
 </head>
 
 <body>
-    <div id="starfield"></div>
+    <div id="keycapfield"></div>
     <div id="gamecontainer">
         <canvas id="gameCanvas"></canvas>
     </div>
@@ -105,14 +105,14 @@
             <a href="http://www.dwmkerr.com/experiments">more experiments</a> | <a href="http://www.dwmkerr.com">dwmkerr.com</a></p>
     </div>
 
-    <script src="js/starfield.js"></script>
+    <script src="js/keycapfield.js"></script>
     <script src="js/spaceinvaders.js"></script>
     <script>
-        //  Create the starfield.
-        var container = document.getElementById('starfield');
-        var starfield = new Starfield();
-        starfield.initialise(container);
-        starfield.start();
+        //  Create the keycapfield.
+        var container = document.getElementById('keycapfield');
+        var keycapfield = new KeycapField();
+        keycapfield.initialise(container);
+        keycapfield.start();
 
         //  Setup the canvas.
         var canvas = document.getElementById("gameCanvas");

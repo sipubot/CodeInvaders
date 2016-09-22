@@ -65,8 +65,6 @@ function Game() {
     this.sounds = null;
 }
 
-function 
-
 //  Initialis the Game with a canvas.
 Game.prototype.initialise = function(gameCanvas) {
 

@@ -1,32 +1,33 @@
 /*
-	Starfield lets you take a div and turn it into a starfield.
+	KeycapField lets you take a div and turn it into a starfield.
 
 */
 
-function StarfieldImages() {
-}
-
-StarfieldImages.images = function() {
-	this.imagelist = [
+function KeycapFieldImages() {
+	this.keycapList = [
 		'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAD1BMVEUAAAD///9VVVUAAACqqqpggSv+AAAAAXRSTlMAQObYZgAAAEtJREFUCNd1jcENgDAMAy02cJsBaMIAICbI/kthRc2Te1nWycbhBXAlhZ1wqxBYybHIgDPnsxsFNXIsdyP+nNnOaKeW+yv6/QbeAh/+7w6qn7DhWwAAAABJRU5ErkJggg==',
 		'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAD1BMVEUAAAD///9VVVUAAACqqqpggSv+AAAAAXRSTlMAQObYZgAAAExJREFUCNd1y8ENwCAMA8CIDVxlgOIwQCsmyP5LkUTwxB9bJ1kyJKubQ98aCrUtsIsgpZEdKUOj/pDuOUKoeI7YPFKv4cC+Vz6RWZEFlLYLYltjut4AAAAASUVORK5CYII=',
 		'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAD1BMVEUAAAD///9VVVUAAACqqqpggSv+AAAAAXRSTlMAQObYZgAAADhJREFUCNdjIAYwKYGBA4OiIBgoM6iAaRFlBkVnY0EhiIihkpAiSMTRUMlJEUkNQheTMRgY4LEKACepCGT9ISzjAAAAAElFTkSuQmCC'
 	];
+}
 
-	var imageFilejson = "images.json";
-	var images = [this.imagelist.length];
-	for(var i=0; i<this.imagelist.length; i++) {
-		images[i] = new Image();
-		images[i].src = 'data:image/png;base64,' + this.imagelist[i];
+KeycapFieldImages.prototype.keycaps = function() {
+	//image list
+	//var imageFilejson = "images.json";
+	var keycap = [this.keycapList.length];
+	for(var i=0; i<this.keycapList.length; i++) {
+		keycap[i] = new Image();
+		keycap[i].src = 'data:image/png;base64,' + this.keycapList[i];
 	}
-	this.images = images;
+	this.keycaps = keycap;
 };
 
-StarfieldImages.images();
-//StarfieldImages.images();
+var imageObj = new KeycapFieldImages();
+imageObj.keycaps();
+//KeycapFieldImages.images();
 
 //	Define the starfield class.
-function Starfield() {
+function KeycapField() {
 	this.fps = 30;
 	this.canvas = null;
 	this.width = 0;
@@ -38,7 +39,7 @@ function Starfield() {
 }
 
 //	The main function - initialises the starfield.
-Starfield.prototype.initialise = function(div) {
+KeycapField.prototype.initialise = function(div) {
 	var self = this;
 	//	Store the div.
 	this.containerDiv = div;
@@ -61,7 +62,7 @@ Starfield.prototype.initialise = function(div) {
 	this.canvas.height = this.height;
 };
 
-Starfield.prototype.start = function() {
+KeycapField.prototype.start = function() {
 
 	//	Create the stars.
 	var stars = [];
@@ -79,11 +80,11 @@ Starfield.prototype.start = function() {
 	}, 1000 / this.fps);
 };
 
-Starfield.prototype.stop = function() {
+KeycapField.prototype.stop = function() {
 	clearInterval(this.intervalId);
 };
 
-Starfield.prototype.update = function() {
+KeycapField.prototype.update = function() {
 	var dt = 1 / this.fps;
 
 	for(var i=0; i<this.stars.length; i++) {
@@ -97,7 +98,7 @@ Starfield.prototype.update = function() {
 	}
 };
 
-Starfield.prototype.draw = function() {
+KeycapField.prototype.draw = function() {
 
 	//	Get the drawing context.
 	var ctx = this.canvas.getContext("2d");
@@ -110,7 +111,7 @@ Starfield.prototype.draw = function() {
 	ctx.fillStyle = '#ffffff';
 	for(var i=0; i<this.stars.length;i++) {
 		var star = this.stars[i];
-		ctx.drawImage(StarfieldImages.images[star.imageNum], star.x, star.y, star.size, star.size);
+		ctx.drawImage(imageObj.keycaps[star.imageNum], star.x, star.y, star.size, star.size);
 	}
 };
 
