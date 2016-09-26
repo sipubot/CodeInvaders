@@ -49,18 +49,18 @@
         }
 
         #gamecontainer {
-            width: 800px;
+            width: 600px;
             margin-left: auto;
             margin-right: auto;
         }
 
         #gamecanvas {
-            width: 800px;
-            height: 600px;
+            width: 600px;
+            height: 800px;
         }
 
         #info {
-            width: 800px;
+            width: 600px;
             text-align: center;
             margin-left: auto;
             margin-right: auto;
@@ -108,6 +108,7 @@
     <script src="js/keycapfield.js"></script>
     <script src="js/spaceinvaders.js"></script>
     <script>
+        // 게임 로드 실행 부분 수정해야할필요가 있다.
         //  Create the keycapfield.
         var container = document.getElementById('keycapfield');
         var keycapfield = new KeycapField();
@@ -116,8 +117,8 @@
 
         //  Setup the canvas.
         var canvas = document.getElementById("gameCanvas");
-        canvas.width = 800;
-        canvas.height = 600;
+        canvas.width = 600;
+        canvas.height = 800;
 
         //  Create the game.
         var game = new Game();
