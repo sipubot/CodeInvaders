@@ -666,6 +666,7 @@ PauseState.prototype.draw = function(game, dt, ctx) {
 function LevelIntroState(level) {
   this.level = level;
   this.countdownMessage = "3";
+  this.IntroStageWord = "This is Just Game";
 }
 
 LevelIntroState.prototype.update = function(game, dt) {
@@ -690,14 +691,22 @@ LevelIntroState.prototype.update = function(game, dt) {
 
 LevelIntroState.prototype.draw = function(game, dt, ctx) {
 
-  //Clear the background.
-  ctx.clearRect(0, 0, game.width, game.height);
-  //start roll up screen var drawChar = getMethod(level);
-  game.backgroundScreen.drawStageIntro();
+  if (this.count === undefined) {
+    this.count = 0;
+  }
+  this.count += dt * game.config.fps;
 
+  //background
+  ctx.font = "68px Arial";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = '#ffffff';
+  ctx.textAlign = "center";
+  ctx.fillText( this.IntroStageWord, game.width / 2, Math.ceil((this.count) / 10)*46);
+
+  //stagebox
+  ctx.clearRect(game.width / 2 - 120, game.height / 2 - 60, 240, 160);
   ctx.fillStyle = '#111111';
   ctx.fillRect(game.width / 2 - 120, game.height / 2 - 60, 240, 160);
-
   ctx.font = "36px Arial";
   ctx.fillStyle = '#ffffff';
   ctx.textBaseline = "middle";
@@ -706,13 +715,8 @@ LevelIntroState.prototype.draw = function(game, dt, ctx) {
   ctx.font = "24px Arial";
   ctx.fillText("Ready in " + this.countdownMessage, game.width / 2, game.height / 2 + 36);
 
-
-  //slow background screen
-  game.backgroundScreen.fps = 60;
-
   return;
 };
-
 
 /*
 
