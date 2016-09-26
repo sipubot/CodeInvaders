@@ -58,6 +58,7 @@ function Game() {
   };
   this.intervalId = 0;
   this.score = 0;
+  this.stage = 0;
   this.level = 1;
 
   //  The state stack.
@@ -69,6 +70,9 @@ function Game() {
 
   //  All sounds.
   this.sounds = null;
+
+  // background screen
+  this.backgroundScreen = null;
 }
 
 //  Initialis the Game with a canvas.
@@ -87,6 +91,10 @@ Game.prototype.initialise = function(gameCanvas) {
     top: gameCanvas.height / 2 - this.config.gameHeight / 2,
     bottom: gameCanvas.height / 2 + this.config.gameHeight / 2,
   };
+};
+
+Game.prototype.setStage = function(stage) {
+  this.stage = stage;
 };
 
 Game.prototype.moveToState = function(state) {
@@ -402,11 +410,11 @@ PlayState.prototype.update = function(game, dt) {
     var invader = this.invaders[i];
     var newx = invader.x + this.invaderVelocity.x * dt;
     var newy = invader.y + this.invaderVelocity.y * dt;
-    if (hitLeft == false && newx < game.gameBounds.left) {
+    if (hitLeft === false && newx < game.gameBounds.left) {
       hitLeft = true;
-    } else if (hitRight == false && newx > game.gameBounds.right) {
+    } else if (hitRight === false && newx > game.gameBounds.right) {
       hitRight = true;
-    } else if (hitBottom == false && newy > game.gameBounds.bottom) {
+    } else if (hitBottom === false && newy > game.gameBounds.bottom) {
       hitBottom = true;
     }
 
@@ -661,8 +669,7 @@ function LevelIntroState(level) {
 }
 
 LevelIntroState.prototype.update = function(game, dt) {
-
-  //  Update the countdown.
+  //  change this intro
   if (this.countdown === undefined) {
     this.countdown = 3; // countdown from 3 secs
   }
@@ -683,8 +690,13 @@ LevelIntroState.prototype.update = function(game, dt) {
 
 LevelIntroState.prototype.draw = function(game, dt, ctx) {
 
-  //  Clear the background.
+  //Clear the background.
   ctx.clearRect(0, 0, game.width, game.height);
+  //start roll up screen var drawChar = getMethod(level);
+  game.backgroundScreen.drawStageIntro();
+
+  ctx.fillStyle = '#111111';
+  ctx.fillRect(game.width / 2 - 120, game.height / 2 - 60, 240, 160);
 
   ctx.font = "36px Arial";
   ctx.fillStyle = '#ffffff';
@@ -693,6 +705,11 @@ LevelIntroState.prototype.draw = function(game, dt, ctx) {
   ctx.fillText("Level " + this.level, game.width / 2, game.height / 2);
   ctx.font = "24px Arial";
   ctx.fillText("Ready in " + this.countdownMessage, game.width / 2, game.height / 2 + 36);
+
+
+  //slow background screen
+  game.backgroundScreen.fps = 60;
+
   return;
 };
 

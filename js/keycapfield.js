@@ -28,7 +28,7 @@ imageObj.keycaps();
 
 //	Define the starfield class.
 function KeycapField() {
-	this.fps = 30;
+	this.fps = 20;
 	this.canvas = null;
 	this.width = 0;
 	this.width = 0;
@@ -114,6 +114,33 @@ KeycapField.prototype.draw = function() {
 		ctx.drawImage(imageObj.keycaps[star.imageNum], star.x, star.y, star.size, star.size);
 	}
 };
+
+KeycapField.prototype.drawStageIntro = function(stage, level) {
+	clearInterval(this.intervalId);
+	//	Get the drawing context.
+	var ctx = this.canvas.getContext("2d");
+	console.log("a");
+	//	Draw the background.
+ 	ctx.fillStyle = '#000000';
+	ctx.fillRect(0, 0, this.width, this.height);
+
+	//	Draw word.
+	var words = new RenderText('a');
+	var max = 10;
+	var wordrender = function (i, word) {
+		ctx.font = "36px Arial";
+		ctx.textBaseline = "middle";
+	  ctx.fillStyle = '#ffffff';
+		ctx.fillText( word + ' ', game.width * i / 100, game.height * i / 100);
+
+		setTimeout(function () {wordrender(i++,word);}, 150);
+	};
+	//wordrender(1, words.word);
+};
+
+function RenderText(word) {
+	this.word = word;
+}
 
 function Star(x, y, size, velocity, imageNum) {
 	this.x = x;
