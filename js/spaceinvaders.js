@@ -38,7 +38,7 @@ function Game() {
     gameHeight: 300,
     fps: 50,
     debugMode: false,
-    invaderRanks: 5,
+    invaderRanks: 1,
     invaderFiles: 10,
     shipSpeed: 120,
     levelDifficultyMultiplier: 0.2,
@@ -358,7 +358,7 @@ PlayState.prototype.enter = function(game) {
   this.invaderNextVelocity = null;
 
   // Create Boss
-  var boss = new Boss((game.width / 2),0,game.stage);
+  var boss = new Boss((game.width / 2),200,game.stage);
   this.boss = boss;
 };
 
@@ -465,11 +465,20 @@ PlayState.prototype.update = function(game, dt) {
       y: 0
     };
   }
+  //move Boss
+  if (this.boss.x > 400) {
+    this.boss.movedirection = 1;
+  }
+  if (this.boss.x < 200) {
+    this.boss.movedirection = -1;
+  }
+  this.boss.x = this.boss.x - dt * this.boss.movedirection * 30;
+
+
   //  If we've hit the bottom, it's game over.
   if (hitBottom) {
     this.lives = 0;
   }
-  //move Boss
 
 
   //  Check for rocket/invader collisions.
@@ -495,6 +504,32 @@ PlayState.prototype.update = function(game, dt) {
       this.invaders.splice(i--, 1);
       game.sounds.playSound('bang');
     }
+  }
+
+  //  Check for rocket/boss collisions.
+  var boss_ = this.boss;
+  var shoted_ = false;
+
+  for (var j = 0; j < this.rockets.length; j++) {
+    var rocket = this.rockets[j];
+
+    if (rocket.x >= (boss_.x - boss_.width / 2) && rocket.x <= (boss_.x + boss_.width / 2) &&
+      rocket.y >= (boss_.y - boss_.height / 2) && rocket.y <= (boss_.y + boss_.height / 2)) {
+
+      //  Remove the rocket, set 'bang' so we don't process
+      //  this rocket again.
+      this.rockets.splice(j--, 1);
+      shoted_ = true;
+      game.score += this.config.pointsPerInvader;
+      break;
+    }
+  }
+  if (shoted_) {
+    this.boss.hp = this.boss.hp - 20;
+    if (this.boss.hp === 0) {
+      //game end
+    }
+    game.sounds.playSound('bang');
   }
 
   //  Find all of the front rank invaders.
@@ -794,6 +829,7 @@ function Boss(x, y, stage) {
   this.stage = stage;
   //get init hp need
   this.hp = 1000;
+  this.movedirection = -1;
   this.width = 80;
   this.height = 40;
 }
