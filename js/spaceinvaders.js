@@ -59,6 +59,7 @@ function Game() {
   this.intervalId = 0;
   this.score = 0;
   this.stage = 0;
+  this.stageName = ['ASSEMBLY','C','JAVA','JAVASCRIPT'];
   this.level = 1;
 
   //  The state stack.
@@ -91,10 +92,6 @@ Game.prototype.initialise = function(gameCanvas) {
     top: gameCanvas.height / 2 - this.config.gameHeight / 2,
     bottom: gameCanvas.height / 2 + this.config.gameHeight / 2,
   };
-};
-
-Game.prototype.setStage = function(stage) {
-  this.stage = stage;
 };
 
 Game.prototype.moveToState = function(state) {
@@ -252,7 +249,18 @@ WelcomeState.prototype.draw = function(game, dt, ctx) {
   ctx.fillText("Code Invaders", game.width / 2, game.height / 2 - 40);
   ctx.font = "16px Arial";
   ctx.fillText("Select Stage", game.width / 2, game.height / 2);
-
+  //draw stage select box
+  for (var i =0; i< game.stageName.length; i++) {
+    if (game.stage === i) {
+      ctx.strokeStyle="#ffffff";
+      ctx.fillStyle = '#ffffff';
+    } else {
+      ctx.strokeStyle="#999999";
+      ctx.fillStyle = '#999999';
+    }
+    ctx.strokeRect(game.width / 2 - 255 + i * 130, game.height / 2 + 300, 120, 60);
+    ctx.fillText(game.stageName[i], game.width / 2 - 195 + i * 130, game.height / 2 + 335, 120, 60);
+  }
 };
 
 WelcomeState.prototype.keyDown = function(game, keyCode) {
@@ -262,6 +270,18 @@ WelcomeState.prototype.keyDown = function(game, keyCode) {
     game.score = 0;
     game.lives = 3;
     game.moveToState(new LevelIntroState(game.level));
+  }
+  if (keyCode == 37) /*left*/ {
+    //  Space starts the game.
+    if (game.stage > 0) {
+      game.stage--;
+    }
+  }
+  if (keyCode == 39) /*right*/ {
+    //  Space starts the game.
+    if (game.stage < 3) {
+      game.stage++;
+    }
   }
 };
 
@@ -607,6 +627,7 @@ PlayState.prototype.draw = function(game, dt, ctx) {
   ctx.fillStyle = '#006600';
   for (var i = 0; i < this.invaders.length; i++) {
     var invader = this.invaders[i];
+    ctx.fillText("Test", invader.x , invader.y);
     ctx.fillRect(invader.x - invader.width / 2, invader.y - invader.height / 2, invader.width, invader.height);
   }
   // Draw Boss.
