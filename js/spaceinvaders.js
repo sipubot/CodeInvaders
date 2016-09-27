@@ -312,6 +312,7 @@ function PlayState(config, level) {
 
   //  Game entities.
   this.ship = null;
+  this.boss = {};
   this.invaders = [];
   this.rockets = [];
   this.bombs = [];
@@ -347,6 +348,7 @@ PlayState.prototype.enter = function(game) {
         rank, file, 'Invader'));
     }
   }
+
   this.invaders = invaders;
   this.invaderCurrentVelocity = this.invaderInitialVelocity;
   this.invaderVelocity = {
@@ -354,6 +356,10 @@ PlayState.prototype.enter = function(game) {
     y: 0
   };
   this.invaderNextVelocity = null;
+
+  // Create Boss
+  var boss = new Boss((game.width / 2),0,game.stage);
+  this.boss = boss;
 };
 
 PlayState.prototype.update = function(game, dt) {
@@ -463,6 +469,8 @@ PlayState.prototype.update = function(game, dt) {
   if (hitBottom) {
     this.lives = 0;
   }
+  //move Boss
+
 
   //  Check for rocket/invader collisions.
   for (i = 0; i < this.invaders.length; i++) {
@@ -566,7 +574,11 @@ PlayState.prototype.draw = function(game, dt, ctx) {
     var invader = this.invaders[i];
     ctx.fillRect(invader.x - invader.width / 2, invader.y - invader.height / 2, invader.width, invader.height);
   }
-
+  // Draw Boss.
+  ctx.fillStyle = '#008800';
+  var boss = this.boss;
+  ctx.fillRect(boss.x - boss.width / 2, boss.y - boss.height / 2, boss.width, boss.height);
+  console.log(boss);
   //  Draw bombs.
   ctx.fillStyle = '#ff5555';
   for (var i = 0; i < this.bombs.length; i++) {
@@ -770,6 +782,20 @@ function Invader(x, y, rank, file, type) {
   this.type = type;
   this.width = 18;
   this.height = 14;
+}
+
+/*
+  Boss on Top
+*/
+
+function Boss(x, y, stage) {
+  this.x = x;
+  this.y = y;
+  this.stage = stage;
+  //get init hp need
+  this.hp = 1000;
+  this.width = 80;
+  this.height = 40;
 }
 
 /*
