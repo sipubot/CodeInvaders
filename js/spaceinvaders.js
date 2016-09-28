@@ -26,6 +26,11 @@ function GameImages() {
 	this.keyboardImageCode = [
 		'iVBORw0KGgoAAAANSUhEUgAAAFAAAAAqBAMAAADWhsE5AAAAG1BMVEXX19fm5uYAAAD09PSqqqq8vLz///84ODisrKx1VPgwAAAAzklEQVQ4y8WVQQrCMBBFB3qCCKJLGVpwawNeYOYC4qJrF71Ab6Ant5k2M4KEyS6fHwKfD+VNUgLXUKUPvOuKZwjPeE9LfYxxzn5pGiD0TOECnfoAMGbfNG1bXHBIS31CnLIfmq7FOtUXZY6eo8zRQArumZlaFmWOnhEHofax99vD5H6b2hYXdLGV2mNWaiZn3kytikrtMWfqpLlso07Kf+ifWURti0KFU9lGLec5b5vJUqOmdY0y9l91eyon0q5oNxynbTNZKtTVz0f1g/QFvZHa0OlzTEYAAAAASUVORK5CYII=',
 	];
+  this.keycapList = [
+		'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAD1BMVEUAAAD///9VVVUAAACqqqpggSv+AAAAAXRSTlMAQObYZgAAAEtJREFUCNd1jcENgDAMAy02cJsBaMIAICbI/kthRc2Te1nWycbhBXAlhZ1wqxBYybHIgDPnsxsFNXIsdyP+nNnOaKeW+yv6/QbeAh/+7w6qn7DhWwAAAABJRU5ErkJggg==',
+		'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAD1BMVEUAAAD///9VVVUAAACqqqpggSv+AAAAAXRSTlMAQObYZgAAAExJREFUCNd1y8ENwCAMA8CIDVxlgOIwQCsmyP5LkUTwxB9bJ1kyJKubQ98aCrUtsIsgpZEdKUOj/pDuOUKoeI7YPFKv4cC+Vz6RWZEFlLYLYltjut4AAAAASUVORK5CYII=',
+		'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQBAMAAADt3eJSAAAAD1BMVEUAAAD///9VVVUAAACqqqpggSv+AAAAAXRSTlMAQObYZgAAADhJREFUCNdjIAYwKYGBA4OiIBgoM6iAaRFlBkVnY0EhiIihkpAiSMTRUMlJEUkNQheTMRgY4LEKACepCGT9ISzjAAAAAElFTkSuQmCC'
+	];
 }
 
 GameImages.prototype.keyboard = function() {
@@ -34,8 +39,20 @@ GameImages.prototype.keyboard = function() {
   keyboard.src = 'data:image/png;base64,' + this.keyboardImageCode;
   this.keyboard = keyboard;
 };
+GameImages.prototype.keycaps = function() {
+	//image list
+	//var imageFilejson = "images.json";
+	var keycap = [this.keycapList.length];
+	for(var i=0; i<this.keycapList.length; i++) {
+		keycap[i] = new Image();
+		keycap[i].src = 'data:image/png;base64,' + this.keycapList[i];
+	}
+	this.keycaps = keycap;
+};
+
 var gameImages = new GameImages();
 gameImages.keyboard();
+gameImages.keycaps();
 
 //  Creates an instance of the Game class.
 function Game() {
@@ -651,7 +668,6 @@ PlayState.prototype.draw = function(game, dt, ctx) {
   ctx.fillStyle = '#008800';
   var boss = this.boss;
   ctx.fillRect(boss.x - boss.width / 2, boss.y - boss.height / 2, boss.width, boss.height);
-  console.log(boss);
   //  Draw bombs.
   ctx.fillStyle = '#ff5555';
   for (var i = 0; i < this.bombs.length; i++) {
@@ -663,7 +679,9 @@ PlayState.prototype.draw = function(game, dt, ctx) {
   ctx.fillStyle = '#ff0000';
   for (var i = 0; i < this.rockets.length; i++) {
     var rocket = this.rockets[i];
-    ctx.fillRect(rocket.x, rocket.y - 2, 1, 4);
+    ctx.fillRect(rocket.x, rocket.y - 2, 8, 8);
+    //rocket image render differ
+    ctx.drawImage(gameImages.keycaps[0], rocket.x, rocket.y - 2, 8, 8);
   }
 
   //  Draw info.
