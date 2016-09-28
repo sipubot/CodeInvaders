@@ -20,6 +20,22 @@
     Listen for 'gameWon' or 'gameLost' events to handle the game
     ending.
 */
+//
+
+function GameImages() {
+	this.keyboardImageCode = [
+		'iVBORw0KGgoAAAANSUhEUgAAAFAAAAAqBAMAAADWhsE5AAAAG1BMVEXX19fm5uYAAAD09PSqqqq8vLz///84ODisrKx1VPgwAAAAzklEQVQ4y8WVQQrCMBBFB3qCCKJLGVpwawNeYOYC4qJrF71Ab6Ant5k2M4KEyS6fHwKfD+VNUgLXUKUPvOuKZwjPeE9LfYxxzn5pGiD0TOECnfoAMGbfNG1bXHBIS31CnLIfmq7FOtUXZY6eo8zRQArumZlaFmWOnhEHofax99vD5H6b2hYXdLGV2mNWaiZn3kytikrtMWfqpLlso07Kf+ifWURti0KFU9lGLec5b5vJUqOmdY0y9l91eyon0q5oNxynbTNZKtTVz0f1g/QFvZHa0OlzTEYAAAAASUVORK5CYII=',
+	];
+}
+
+GameImages.prototype.keyboard = function() {
+	//image list
+	var keyboard = new Image();
+  keyboard.src = 'data:image/png;base64,' + this.keyboardImageCode;
+  this.keyboard = keyboard;
+};
+var gameImages = new GameImages();
+gameImages.keyboard();
 
 //  Creates an instance of the Game class.
 function Game() {
@@ -622,7 +638,8 @@ PlayState.prototype.draw = function(game, dt, ctx) {
   //  Draw ship.
   ctx.fillStyle = '#999999';
   ctx.fillRect(this.ship.x - (this.ship.width / 2), this.ship.y - (this.ship.height / 2), this.ship.width, this.ship.height);
-
+  ctx.drawImage(gameImages.keyboard, this.ship.x - (this.ship.width / 2), this.ship.y - (this.ship.height / 2), 80, 42);
+//gameImages.keyboard
   //  Draw invaders.
   ctx.fillStyle = '#006600';
   for (var i = 0; i < this.invaders.length; i++) {
@@ -796,8 +813,8 @@ LevelIntroState.prototype.draw = function(game, dt, ctx) {
 function Ship(x, y) {
   this.x = x;
   this.y = y;
-  this.width = 20;
-  this.height = 16;
+  this.width = 80;
+  this.height = 42;
 }
 
 /*

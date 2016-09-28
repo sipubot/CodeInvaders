@@ -24,7 +24,6 @@ KeycapFieldImages.prototype.keycaps = function() {
 
 var imageObj = new KeycapFieldImages();
 imageObj.keycaps();
-//KeycapFieldImages.images();
 
 //	Define the starfield class.
 function KeycapField() {
