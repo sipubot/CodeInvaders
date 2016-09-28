@@ -607,7 +607,7 @@ PlayState.prototype.update = function(game, dt) {
   }
 
   //  Check for victory
-  if (this.invaders.length === 0) {
+  if (this.invaders.length === 0 && this.boss.hp === 0) {
     game.score += this.level * 50;
     game.level += 1;
     game.moveToState(new LevelIntroState(game.level));
