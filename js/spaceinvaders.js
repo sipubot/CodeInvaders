@@ -422,53 +422,51 @@ PlayState.prototype.update = function(game, dt) {
   //  event for smooth movement, otherwise the ship would move
   //  more like a text editor caret.
   if (game.pressedKeys[37]) {
-    this.ship.x -= this.shipSpeed * dt;
+    PlayState.ship.x -= PlayState.shipSpeed * dt;
   }
   if (game.pressedKeys[39]) {
-    this.ship.x += this.shipSpeed * dt;
+    PlayState.ship.x += PlayState.shipSpeed * dt;
   }
   if (game.pressedKeys[32]) {
-    this.fireRocket();
+    PlayState.fireRocket();
   }
 
   //  Keep the ship in bounds.
-  if (this.ship.x < game.gameBounds.left) {
-    this.ship.x = game.gameBounds.left;
+  if (PlayState.ship.x < game.gameBounds.left) {
+    PlayState.ship.x = game.gameBounds.left;
   }
-  if (this.ship.x > game.gameBounds.right) {
-    this.ship.x = game.gameBounds.right;
+  if (PlayState.ship.x > game.gameBounds.right) {
+    PlayState.ship.x = game.gameBounds.right;
   }
 
   //  Move each bomb.
-  for (var i = 0; i < this.bombs.length; i++) {
-    var bomb = this.bombs[i];
+	PlayState.bombs.map(function (bomb, i){
     bomb.y += dt * bomb.velocity;
 
     //  If the rocket has gone off the screen remove it.
-    if (bomb.y > this.height) {
-      this.bombs.splice(i--, 1);
+    if (bomb.y > PlayState.height) {
+      PlayState.bombs.splice(i--, 1);
     }
-  }
+	});
 
   //  Move each rocket.
-  for (i = 0; i < this.rockets.length; i++) {
-    var rocket = this.rockets[i];
-    rocket.y -= dt * rocket.velocity;
+	PlayState.rockets.map(function (rocket, i){
+		rocket.y -= dt * rocket.velocity;
 
     //  If the rocket has gone off the screen remove it.
     if (rocket.y < 0) {
-      this.rockets.splice(i--, 1);
+      PlayState.rockets.splice(i--, 1);
     }
-  }
+	});
 
   //  Move the invaders.
   var hitLeft = false,
     hitRight = false,
     hitBottom = false;
-  for (i = 0; i < this.invaders.length; i++) {
-    var invader = this.invaders[i];
-    var newx = invader.x + this.invaderVelocity.x * dt;
-    var newy = invader.y + this.invaderVelocity.y * dt;
+
+	PlayState.invaders.map(function(invader){
+    var newx = invader.x + PlayState.invaderVelocity.x * dt;
+    var newy = invader.y + PlayState.invaderVelocity.y * dt;
     if (hitLeft === false && newx < game.gameBounds.left) {
       hitLeft = true;
     } else if (hitRight === false && newx > game.gameBounds.right) {
@@ -481,96 +479,96 @@ PlayState.prototype.update = function(game, dt) {
       invader.x = newx;
       invader.y = newy;
     }
-  }
+	});
 
   //  Update invader velocities.
-  if (this.invadersAreDropping) {
-    this.invaderCurrentDropDistance += this.invaderVelocity.y * dt;
-    if (this.invaderCurrentDropDistance >= this.config.invaderDropDistance) {
-      this.invadersAreDropping = false;
-      this.invaderVelocity = this.invaderNextVelocity;
-      this.invaderCurrentDropDistance = 0;
+  if (PlayState.invadersAreDropping) {
+    PlayState.invaderCurrentDropDistance += PlayState.invaderVelocity.y * dt;
+    if (PlayState.invaderCurrentDropDistance >= PlayState.config.invaderDropDistance) {
+      PlayState.invadersAreDropping = false;
+      PlayState.invaderVelocity = PlayState.invaderNextVelocity;
+      PlayState.invaderCurrentDropDistance = 0;
     }
   }
   //  If we've hit the left, move down then right.
   if (hitLeft) {
-    this.invaderCurrentVelocity += this.config.invaderAcceleration;
-    this.invaderVelocity = {
+    PlayState.invaderCurrentVelocity += PlayState.config.invaderAcceleration;
+    PlayState.invaderVelocity = {
       x: 0,
-      y: this.invaderCurrentVelocity
+      y: PlayState.invaderCurrentVelocity
     };
-    this.invadersAreDropping = true;
-    this.invaderNextVelocity = {
-      x: this.invaderCurrentVelocity,
+    PlayState.invadersAreDropping = true;
+    PlayState.invaderNextVelocity = {
+      x: PlayState.invaderCurrentVelocity,
       y: 0
     };
   }
   //  If we've hit the right, move down then left.
   if (hitRight) {
-    this.invaderCurrentVelocity += this.config.invaderAcceleration;
-    this.invaderVelocity = {
+    PlayState.invaderCurrentVelocity += PlayState.config.invaderAcceleration;
+    PlayState.invaderVelocity = {
       x: 0,
-      y: this.invaderCurrentVelocity
+      y: PlayState.invaderCurrentVelocity
     };
-    this.invadersAreDropping = true;
-    this.invaderNextVelocity = {
-      x: -this.invaderCurrentVelocity,
+    PlayState.invadersAreDropping = true;
+    PlayState.invaderNextVelocity = {
+      x: -PlayState.invaderCurrentVelocity,
       y: 0
     };
   }
   //move Boss
-  if (this.boss.x > 400) {
-    this.boss.movedirection = 1;
+  if (PlayState.boss.x > 400) {
+    PlayState.boss.movedirection = 1;
   }
-  if (this.boss.x < 200) {
-    this.boss.movedirection = -1;
+  if (PlayState.boss.x < 200) {
+    PlayState.boss.movedirection = -1;
   }
-  this.boss.x = this.boss.x - dt * this.boss.movedirection * 30;
+  PlayState.boss.x = PlayState.boss.x - dt * PlayState.boss.movedirection * 30;
 
 
   //  If we've hit the bottom, it's game over.
   if (hitBottom) {
-    this.lives = 0;
+    PlayState.lives = 0;
   }
 
 
   //  Check for rocket/invader collisions.
-	this.invaders.map(function(invader, i){
+	PlayState.invaders.map(function(invader, i){
 		var bang = false;
 
-		this.rockets.map(function(rocket, j){
-			if (rocket.x >= (this.invaders[i].x - this.invaders[i].width / 2) && rocket.x <= (this.invaders[i].x + this.invaders[i].width / 2) &&
-        rocket.y >= (this.invaders[i].y - this.invaders[i].height / 2) && rocket.y <= (this.invaders[i].y + this.invaders[i].height / 2)) {
+		PlayState.rockets.map(function(rocket, j){
+			if (rocket.x >= (invader.x - invader.width / 2) && rocket.x <= (invader.x + invader.width / 2) &&
+        rocket.y >= (invader.y - invader.height / 2) && rocket.y <= (invader.y + invader.height / 2)) {
         //  Remove the rocket, set 'bang' so we don't process
         //  this rocket again.
-        this.rockets.splice(j--, 1);
+        PlayState.rockets.splice(j--, 1);
         bang = true;
-        game.score += this.config.pointsPerInvader;
+        game.score += PlayState.config.pointsPerInvader;
       }
 		});
     if (bang) {
-      this.invaders.splice(i--, 1);
+      PlayState.invaders.splice(i--, 1);
       game.sounds.playSound('bang');
     }
 	});
 
   //  Check for rocket/boss collisions.
-  var boss_ = this.boss;
+  var boss_ = PlayState.boss;
   var shoted_ = false;
 
-	this.rockets.map(function(rocket, i){
+	PlayState.rockets.map(function(rocket, i){
 		if (rocket.x >= (boss_.x - boss_.width / 2) && rocket.x <= (boss_.x + boss_.width / 2) &&
       rocket.y >= (boss_.y - boss_.height / 2) && rocket.y <= (boss_.y + boss_.height / 2)) {
       //  Remove the rocket, set 'bang' so we don't process
       //  this rocket again.
-      this.rockets.splice(i--, 1);
+      PlayState.rockets.splice(i--, 1);
       shoted_ = true;
-      game.score += this.config.pointsPerInvader;
+      game.score += PlayState.config.pointsPerInvader;
     }
 	});
   if (shoted_) {
-    this.boss.hp = this.boss.hp - 20;
-    if (this.boss.hp === 0) {
+    PlayState.boss.hp = PlayState.boss.hp - 20;
+    if (PlayState.boss.hp === 0) {
       //game end
     }
     game.sounds.playSound('bang');
@@ -578,7 +576,7 @@ PlayState.prototype.update = function(game, dt) {
 
   //  Find all of the front rank invaders.
   var frontRankInvaders = {};
-	this.invaders.map(function(invader){
+	PlayState.invaders.map(function(invader){
 		if (!frontRankInvaders[invader.file] || frontRankInvaders[invader.file].rank < invader.rank) {
       frontRankInvaders[invader.file] = invader;
     }
@@ -587,31 +585,31 @@ PlayState.prototype.update = function(game, dt) {
   //  Give each front rank invader a chance to drop a bomb.
 	frontRankInvaders.map(function(frontRankInvader){
 		if (!frontRankInvader) {
-			var chance = this.bombRate * dt;
+			var chance = PlayState.bombRate * dt;
 	    if (chance > Math.random()) {
 	      //  Fire!
-	      this.bombs.push(new Bomb(frontRankInvader.x, frontRankInvader.y + frontRankInvader.height / 2,
-	        this.bombMinVelocity + Math.random() * (this.bombMaxVelocity - this.bombMinVelocity)));
+	      PlayState.bombs.push(new Bomb(frontRankInvader.x, frontRankInvader.y + frontRankInvader.height / 2,
+	        PlayState.bombMinVelocity + Math.random() * (PlayState.bombMaxVelocity - PlayState.bombMinVelocity)));
 	    }
 		}
 	});
 
   //  Check for bomb/ship collisions.
-	this.bombs.map(function (bomb){
-		if (bomb.x >= (this.ship.x - this.ship.width / 2) && bomb.x <= (this.ship.x + this.ship.width / 2) &&
-      bomb.y >= (this.ship.y - this.ship.height / 2) && bomb.y <= (this.ship.y + this.ship.height / 2)) {
-      this.bombs.splice(ibs--, 1);
+	PlayState.bombs.map(function (bomb){
+		if (bomb.x >= (PlayState.ship.x - PlayState.ship.width / 2) && bomb.x <= (PlayState.ship.x + PlayState.ship.width / 2) &&
+      bomb.y >= (PlayState.ship.y - PlayState.ship.height / 2) && bomb.y <= (PlayState.ship.y + PlayState.ship.height / 2)) {
+      PlayState.bombs.splice(ibs--, 1);
       game.lives--;
       game.sounds.playSound('explosion');
     }
 	});
 
   //  Check for invader/ship collisions.
-	this.invaders.map(function (invader){
-		if ((invader.x + invader.width / 2) > (this.ship.x - this.ship.width / 2) &&
-      (invader.x - invader.width / 2) < (this.ship.x + this.ship.width / 2) &&
-      (invader.y + invader.height / 2) > (this.ship.y - this.ship.height / 2) &&
-      (invader.y - invader.height / 2) < (this.ship.y + this.ship.height / 2)) {
+	PlayState.invaders.map(function (invader){
+		if ((invader.x + invader.width / 2) > (PlayState.ship.x - PlayState.ship.width / 2) &&
+      (invader.x - invader.width / 2) < (PlayState.ship.x + PlayState.ship.width / 2) &&
+      (invader.y + invader.height / 2) > (PlayState.ship.y - PlayState.ship.height / 2) &&
+      (invader.y - invader.height / 2) < (PlayState.ship.y + PlayState.ship.height / 2)) {
       //  Dead by collision!
       game.lives = 0;
       game.sounds.playSound('explosion');
@@ -624,8 +622,8 @@ PlayState.prototype.update = function(game, dt) {
   }
 
   //  Check for victory
-  if (this.invaders.length === 0 && this.boss.hp === 0) {
-    game.score += this.level * 50;
+  if (PlayState.invaders.length === 0 && PlayState.boss.hp === 0) {
+    game.score += PlayState.level * 50;
     game.level += 1;
     game.moveToState(new LevelIntroState(game.level));
   }
@@ -638,28 +636,28 @@ PlayState.prototype.draw = function(game, dt, ctx) {
 
   //  Draw ship.
   ctx.fillStyle = '#999999';
-  ctx.fillRect(this.ship.x - (this.ship.width / 2), this.ship.y - (this.ship.height / 2), this.ship.width, this.ship.height);
-  ctx.drawImage(gameImages.keyboard, this.ship.x - (this.ship.width / 2), this.ship.y - (this.ship.height / 2), 80, 42);
+  ctx.fillRect(PlayState.ship.x - (PlayState.ship.width / 2), PlayState.ship.y - (PlayState.ship.height / 2), PlayState.ship.width, PlayState.ship.height);
+  ctx.drawImage(gameImages.keyboard, PlayState.ship.x - (PlayState.ship.width / 2), PlayState.ship.y - (PlayState.ship.height / 2), 80, 42);
 //gameImages.keyboard
   //  Draw invaders.
   ctx.fillStyle = '#006600';
-	this.invaders.map(function (invader){
+	PlayState.invaders.map(function (invader){
 		ctx.fillText("Test", invader.x , invader.y);
     ctx.fillRect(invader.x - invader.width / 2, invader.y - invader.height / 2, invader.width, invader.height);
 	});
   // Draw Boss.
   ctx.fillStyle = '#008800';
-  var boss = this.boss;
+  var boss = PlayState.boss;
   ctx.fillRect(boss.x - boss.width / 2, boss.y - boss.height / 2, boss.width, boss.height);
   //  Draw bombs.
   ctx.fillStyle = '#ff5555';
-	this.bombs.map(function (bomb){
+	PlayState.bombs.map(function (bomb){
 		ctx.fillRect(bomb.x - 2, bomb.y - 2, 4, 4);
 	});
 
   //  Draw rockets.
   ctx.fillStyle = '#ff0000';
-	this.rockets.map(function (rocket){
+	PlayState.rockets.map(function (rocket){
 		ctx.fillRect(rocket.x, rocket.y - 2, 8, 8);
     //rocket image render differ
     ctx.drawImage(gameImages.keycaps[0], rocket.x, rocket.y - 2, 8, 8);
@@ -677,7 +675,7 @@ PlayState.prototype.draw = function(game, dt, ctx) {
   ctx.fillText(info, game.gameBounds.right, textYpos);
 
   //  If we're in debug mode, draw bounds.
-  if (this.config.debugMode) {
+  if (PlayState.config.debugMode) {
     ctx.strokeStyle = '#ff0000';
     ctx.strokeRect(0, 0, game.width, game.height);
     ctx.strokeRect(game.gameBounds.left, game.gameBounds.top,
@@ -691,7 +689,7 @@ PlayState.prototype.keyDown = function(game, keyCode) {
 
   if (keyCode == 32) {
     //  Fire!
-    this.fireRocket();
+    PlayState.fireRocket();
   }
   if (keyCode == 80) {
     //  Push the pause state.
@@ -706,10 +704,10 @@ PlayState.prototype.keyUp = function(game, keyCode) {
 PlayState.prototype.fireRocket = function() {
   //  If we have no last rocket time, or the last rocket time
   //  is older than the max rocket rate, we can fire.
-  if (this.lastRocketTime === null || ((new Date()).valueOf() - this.lastRocketTime) > (1000 / this.config.rocketMaxFireRate)) {
+  if (PlayState.lastRocketTime === null || ((new Date()).valueOf() - PlayState.lastRocketTime) > (1000 / PlayState.config.rocketMaxFireRate)) {
     //  Add a rocket.
-    this.rockets.push(new Rocket(this.ship.x, this.ship.y - 12, this.config.rocketVelocity));
-    this.lastRocketTime = (new Date()).valueOf();
+    PlayState.rockets.push(new Rocket(PlayState.ship.x, PlayState.ship.y - 12, PlayState.config.rocketVelocity));
+    PlayState.lastRocketTime = (new Date()).valueOf();
 
     //  Play the 'shoot' sound.
     game.sounds.playSound('shoot');
