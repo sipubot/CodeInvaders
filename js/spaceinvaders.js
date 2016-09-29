@@ -535,48 +535,39 @@ PlayState.prototype.update = function(game, dt) {
 
 
   //  Check for rocket/invader collisions.
-  for (i = 0; i < this.invaders.length; i++) {
-    var invader = this.invaders[i];
-    var bang = false;
+	this.invaders.map(function(invader, i){
+		var bang = false;
 
-    for (var j = 0; j < this.rockets.length; j++) {
-      var rocket = this.rockets[j];
-
-      if (rocket.x >= (invader.x - invader.width / 2) && rocket.x <= (invader.x + invader.width / 2) &&
-        rocket.y >= (invader.y - invader.height / 2) && rocket.y <= (invader.y + invader.height / 2)) {
-
+		this.rockets.map(function(rocket, j){
+			if (rocket.x >= (this.invaders[i].x - this.invaders[i].width / 2) && rocket.x <= (this.invaders[i].x + this.invaders[i].width / 2) &&
+        rocket.y >= (this.invaders[i].y - this.invaders[i].height / 2) && rocket.y <= (this.invaders[i].y + this.invaders[i].height / 2)) {
         //  Remove the rocket, set 'bang' so we don't process
         //  this rocket again.
         this.rockets.splice(j--, 1);
         bang = true;
         game.score += this.config.pointsPerInvader;
-        break;
       }
-    }
+		});
     if (bang) {
       this.invaders.splice(i--, 1);
       game.sounds.playSound('bang');
     }
-  }
+	});
 
   //  Check for rocket/boss collisions.
   var boss_ = this.boss;
   var shoted_ = false;
 
-  for (var j = 0; j < this.rockets.length; j++) {
-    var rocket = this.rockets[j];
-
-    if (rocket.x >= (boss_.x - boss_.width / 2) && rocket.x <= (boss_.x + boss_.width / 2) &&
+	this.rockets.map(function(rocket, i){
+		if (rocket.x >= (boss_.x - boss_.width / 2) && rocket.x <= (boss_.x + boss_.width / 2) &&
       rocket.y >= (boss_.y - boss_.height / 2) && rocket.y <= (boss_.y + boss_.height / 2)) {
-
       //  Remove the rocket, set 'bang' so we don't process
       //  this rocket again.
-      this.rockets.splice(j--, 1);
+      this.rockets.splice(i--, 1);
       shoted_ = true;
       game.score += this.config.pointsPerInvader;
-      break;
     }
-  }
+	});
   if (shoted_) {
     this.boss.hp = this.boss.hp - 20;
     if (this.boss.hp === 0) {
@@ -587,44 +578,37 @@ PlayState.prototype.update = function(game, dt) {
 
   //  Find all of the front rank invaders.
   var frontRankInvaders = {};
-  for (var i = 0; i < this.invaders.length; i++) {
-    var invader = this.invaders[i];
-    //  If we have no invader for game file, or the invader
-    //  for game file is futher behind, set the front
-    //  rank invader to game one.
-    if (!frontRankInvaders[invader.file] || frontRankInvaders[invader.file].rank < invader.rank) {
+	this.invaders.map(function(invader){
+		if (!frontRankInvaders[invader.file] || frontRankInvaders[invader.file].rank < invader.rank) {
       frontRankInvaders[invader.file] = invader;
     }
-  }
+	});
 
   //  Give each front rank invader a chance to drop a bomb.
-  for (var i = 0; i < this.config.invaderFiles; i++) {
-    var invader = frontRankInvaders[i];
-    if (!invader) continue;
-    var chance = this.bombRate * dt;
-    if (chance > Math.random()) {
-      //  Fire!
-      this.bombs.push(new Bomb(invader.x, invader.y + invader.height / 2,
-        this.bombMinVelocity + Math.random() * (this.bombMaxVelocity - this.bombMinVelocity)));
-    }
-  }
+	frontRankInvaders.map(function(frontRankInvader){
+		if (!frontRankInvader) {
+			var chance = this.bombRate * dt;
+	    if (chance > Math.random()) {
+	      //  Fire!
+	      this.bombs.push(new Bomb(frontRankInvader.x, frontRankInvader.y + frontRankInvader.height / 2,
+	        this.bombMinVelocity + Math.random() * (this.bombMaxVelocity - this.bombMinVelocity)));
+	    }
+		}
+	});
 
   //  Check for bomb/ship collisions.
-  for (var i = 0; i < this.bombs.length; i++) {
-    var bomb = this.bombs[i];
-    if (bomb.x >= (this.ship.x - this.ship.width / 2) && bomb.x <= (this.ship.x + this.ship.width / 2) &&
+	this.bombs.map(function (bomb){
+		if (bomb.x >= (this.ship.x - this.ship.width / 2) && bomb.x <= (this.ship.x + this.ship.width / 2) &&
       bomb.y >= (this.ship.y - this.ship.height / 2) && bomb.y <= (this.ship.y + this.ship.height / 2)) {
-      this.bombs.splice(i--, 1);
+      this.bombs.splice(ibs--, 1);
       game.lives--;
       game.sounds.playSound('explosion');
     }
-
-  }
+	});
 
   //  Check for invader/ship collisions.
-  for (var i = 0; i < this.invaders.length; i++) {
-    var invader = this.invaders[i];
-    if ((invader.x + invader.width / 2) > (this.ship.x - this.ship.width / 2) &&
+	this.invaders.map(function (invader){
+		if ((invader.x + invader.width / 2) > (this.ship.x - this.ship.width / 2) &&
       (invader.x - invader.width / 2) < (this.ship.x + this.ship.width / 2) &&
       (invader.y + invader.height / 2) > (this.ship.y - this.ship.height / 2) &&
       (invader.y - invader.height / 2) < (this.ship.y + this.ship.height / 2)) {
@@ -632,7 +616,7 @@ PlayState.prototype.update = function(game, dt) {
       game.lives = 0;
       game.sounds.playSound('explosion');
     }
-  }
+	});
 
   //  Check for failure
   if (game.lives <= 0) {
@@ -659,30 +643,27 @@ PlayState.prototype.draw = function(game, dt, ctx) {
 //gameImages.keyboard
   //  Draw invaders.
   ctx.fillStyle = '#006600';
-  for (var i = 0; i < this.invaders.length; i++) {
-    var invader = this.invaders[i];
-    ctx.fillText("Test", invader.x , invader.y);
+	this.invaders.map(function (invader){
+		ctx.fillText("Test", invader.x , invader.y);
     ctx.fillRect(invader.x - invader.width / 2, invader.y - invader.height / 2, invader.width, invader.height);
-  }
+	});
   // Draw Boss.
   ctx.fillStyle = '#008800';
   var boss = this.boss;
   ctx.fillRect(boss.x - boss.width / 2, boss.y - boss.height / 2, boss.width, boss.height);
   //  Draw bombs.
   ctx.fillStyle = '#ff5555';
-  for (var i = 0; i < this.bombs.length; i++) {
-    var bomb = this.bombs[i];
-    ctx.fillRect(bomb.x - 2, bomb.y - 2, 4, 4);
-  }
+	this.bombs.map(function (bomb){
+		ctx.fillRect(bomb.x - 2, bomb.y - 2, 4, 4);
+	});
 
   //  Draw rockets.
   ctx.fillStyle = '#ff0000';
-  for (var i = 0; i < this.rockets.length; i++) {
-    var rocket = this.rockets[i];
-    ctx.fillRect(rocket.x, rocket.y - 2, 8, 8);
+	this.rockets.map(function (rocket){
+		ctx.fillRect(rocket.x, rocket.y - 2, 8, 8);
     //rocket image render differ
     ctx.drawImage(gameImages.keycaps[0], rocket.x, rocket.y - 2, 8, 8);
-  }
+	});
 
   //  Draw info.
   var textYpos = game.gameBounds.bottom + ((game.height - game.gameBounds.bottom) / 2) + 14 / 2;
