@@ -13,7 +13,6 @@ function KeycapFieldImages() {
 
 KeycapFieldImages.prototype.keycaps = function() {
 	//image list
-	//var imageFilejson = "images.json";
 	var keycap = [this.keycapList.length];
 	for(var i=0; i<this.keycapList.length; i++) {
 		keycap[i] = new Image();

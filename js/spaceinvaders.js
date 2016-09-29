@@ -36,16 +36,19 @@ function GameImages() {
 GameImages.prototype.keyboard = function() {
 	//image list
 	var keyboard = new Image();
-  keyboard.src = 'data:image/png;base64,' + this.keyboardImageCode;
+	keyboard.src = 'data:image/png;base64,' + this.keyboardImageCode;
   this.keyboard = keyboard;
 };
+
 GameImages.prototype.keycaps = function() {
+	var GameImages = Object(this);
 	//image list
 	//var imageFilejson = "images.json";
 	this.keycaps = [this.keycapList.length];
 	this.keycaps.map(function(keycap, i){
 		keycap = new Image();
-		keycap.src = 'data:image/png;base64,' + this.keycapList[i];
+		keycap = {};
+		keycap.src = 'data:image/png;base64,' + GameImages.keycapList[i];
 	});
 };
 
