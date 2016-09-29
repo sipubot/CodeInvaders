@@ -283,8 +283,8 @@ WelcomeState.prototype.draw = function(game, dt, ctx) {
   ctx.font = "16px Arial";
   ctx.fillText("Select Stage", game.width / 2, game.height / 2);
   //draw stage select box
-  for (var i =0; i< game.stageName.length; i++) {
-    if (game.stage === i) {
+	game.stageName.map(function (stage, i){
+		if (game.stage === i) {
       ctx.strokeStyle="#ffffff";
       ctx.fillStyle = '#ffffff';
     } else {
@@ -293,7 +293,7 @@ WelcomeState.prototype.draw = function(game, dt, ctx) {
     }
     ctx.strokeRect(game.width / 2 - 255 + i * 130, game.height / 2 + 300, 120, 60);
     ctx.fillText(game.stageName[i], game.width / 2 - 195 + i * 130, game.height / 2 + 335, 120, 60);
-  }
+	});
 };
 
 WelcomeState.prototype.keyDown = function(game, keyCode) {
