@@ -42,12 +42,11 @@ GameImages.prototype.keyboard = function() {
 GameImages.prototype.keycaps = function() {
 	//image list
 	//var imageFilejson = "images.json";
-	var keycap = [this.keycapList.length];
-	for(var i=0; i<this.keycapList.length; i++) {
-		keycap[i] = new Image();
-		keycap[i].src = 'data:image/png;base64,' + this.keycapList[i];
-	}
-	this.keycaps = keycap;
+	this.keycaps = [this.keycapList.length];
+	this.keycaps.map(function(keycap, i){
+		keycap = new Image();
+		keycap.src = 'data:image/png;base64,' + this.keycapList[i];
+	});
 };
 
 var gameImages = new GameImages();
@@ -393,6 +392,7 @@ PlayState.prototype.enter = function(game) {
   var ranks = this.config.invaderRanks;
   var files = this.config.invaderFiles;
   var invaders = [];
+
   for (var rank = 0; rank < ranks; rank++) {
     for (var file = 0; file < files; file++) {
       invaders.push(new Invader(
