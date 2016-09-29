@@ -596,10 +596,10 @@ PlayState.prototype.update = function(game, dt) {
 	});
 
   //  Check for bomb/ship collisions.
-	this.bombs.map(function (bomb){
+	this.bombs.map(function (bomb, i){
 		if (bomb.x >= (PlayState.ship.x - PlayState.ship.width / 2) && bomb.x <= (PlayState.ship.x + PlayState.ship.width / 2) &&
       bomb.y >= (PlayState.ship.y - PlayState.ship.height / 2) && bomb.y <= (PlayState.ship.y + PlayState.ship.height / 2)) {
-      PlayState.bombs.splice(ibs--, 1);
+      PlayState.bombs.splice(i--, 1);
       game.lives--;
       game.sounds.playSound('explosion');
     }
