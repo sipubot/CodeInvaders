@@ -44,12 +44,13 @@ GameImages.prototype.keycaps = function() {
   var GameImages = Object(this);
   //image list
   //var imageFilejson = "images.json";
-  this.keycaps = [this.keycapList.length];
-  this.keycaps.map(function(keycap, i) {
-    keycap = new Image();
-    keycap = {};
-    keycap.src = 'data:image/png;base64,' + GameImages.keycapList[i];
+  var keycaps = [];
+  GameImages.keycapList.map(function(keycapImageCode, i) {
+    var keycap = new Image();
+    keycap.src = 'data:image/png;base64,' + keycapImageCode;
+    keycaps.push(keycap);
   });
+  this.keycaps = keycaps;
 };
 
 var gameImages = new GameImages();
@@ -609,10 +610,9 @@ PlayState.prototype.draw = function(game, dt, ctx) {
   //  Draw rockets.
   ctx.fillStyle = '#ff0000';
   this.rockets.map(function(rocket) {
-    console.log(rocket);
     ctx.fillRect(rocket.x, rocket.y - 2, 8, 8);
     //rocket image render differ
-    ctx.drawImage(gameImages.keycapList[0], rocket.x, rocket.y - 2, 8, 8);
+    ctx.drawImage(gameImages.keycaps[0], rocket.x, rocket.y - 2, 8, 8);
   });
   //  Draw info.
   var textYpos = game.gameBounds.bottom + ((game.height - game.gameBounds.bottom) / 2) + 14 / 2;
