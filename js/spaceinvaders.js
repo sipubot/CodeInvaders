@@ -337,10 +337,11 @@ function PlayState(config, level) {
   this.lastRocketTime = null;
   //  Game entities.
   this.ship = null;
-  this.boss = {};
   this.invaders = [];
   this.rockets = [];
   this.bombs = [];
+  this.boss = {};
+  this.bossbombs = [];
 }
 
 PlayState.prototype.enter = function(game) {
@@ -490,6 +491,30 @@ PlayState.prototype.update = function(game, dt) {
     this.boss.movedirection = -1;
   }
   this.boss.x = this.boss.x - dt * this.boss.movedirection * 30;
+  //boss bomb moving
+  //  Move each bomb.
+  this.bossbombs.map(function(bossbomb, i) {
+    //  If the rocket has gone off the screen remove it.
+    switch (bossbomb.direction) {
+      case 0:
+        bossbomb.y += dt * bossbomb.velocity;
+        bossbomb.x -= dt * bossbomb.velocity;
+        break;
+      case 1:
+        bossbomb.y += dt * bossbomb.velocity;
+        break;
+      case 2:
+        bossbomb.y += dt * bossbomb.velocity;
+        bossbomb.x += dt * bossbomb.velocity;
+        break;
+      default:
+        break;
+    }
+    if (bossbomb.y > game.height || bossbomb.x > game.width || bossbomb.x < 0 || bossbomb.y < 0) {
+      PlayState.bossbombs.splice(i--, 1);
+    }
+  });
+
   //  If we've hit the bottom, it's game over.
   if (hitBottom) {
     this.lives = 0;
@@ -533,6 +558,17 @@ PlayState.prototype.update = function(game, dt) {
       //game end
     }
     game.sounds.playSound('bang');
+  }
+  //Bossbombshot
+  if (PlayState.boss.hp > 0 && PlayState.bossbombs.length === 0) {
+      //  Fire!  speed modifi needs
+    PlayState.bossbombs.push(new BossBomb(PlayState.boss.x, PlayState.boss.y + PlayState.boss.height / 2, 0,
+      PlayState.bombMinVelocity + Math.random() * (PlayState.bombMaxVelocity - PlayState.bombMinVelocity)));
+    PlayState.bossbombs.push(new BossBomb(PlayState.boss.x, PlayState.boss.y + PlayState.boss.height / 2, 1,
+      PlayState.bombMinVelocity + Math.random() * (PlayState.bombMaxVelocity - PlayState.bombMinVelocity)));
+    PlayState.bossbombs.push(new BossBomb(PlayState.boss.x, PlayState.boss.y + PlayState.boss.height / 2, 2,
+      PlayState.bombMinVelocity + Math.random() * (PlayState.bombMaxVelocity - PlayState.bombMinVelocity)));
+
   }
   //  Find all of the front rank invaders.
   var frontRankInvaders = {};
@@ -602,6 +638,11 @@ PlayState.prototype.draw = function(game, dt, ctx) {
   ctx.fillStyle = '#008800';
   var boss = this.boss;
   ctx.fillRect(boss.x - boss.width / 2, boss.y - boss.height / 2, boss.width, boss.height);
+  //  Draw bossbombs.
+  ctx.fillStyle = '#00ffff';
+  this.bossbombs.map(function(bomb) {
+    ctx.fillRect(bomb.x - 2, bomb.y - 2, 6, 6);
+  });
   //  Draw bombs.
   ctx.fillStyle = '#ff5555';
   this.bombs.map(function(bomb) {
@@ -779,6 +820,18 @@ function Bomb(x, y, velocity) {
   this.velocity = velocity;
 }
 
+/*
+    bossBomb
+
+    Dropped by boss, they've got position, velocity.
+
+*/
+function BossBomb(x, y, direction,  velocity) {
+  this.x = x;
+  this.y = y;
+  this.direction = direction;
+  this.velocity = velocity;
+}
 /*
     Invader
 
