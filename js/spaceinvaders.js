@@ -595,6 +595,15 @@ PlayState.prototype.update = function(game, dt) {
       game.sounds.playSound('explosion');
     }
   });
+  //  Check for bomb/ship collisions.
+  this.bossbombs.map(function(bossbomb, i) {
+    if (bossbomb.x >= (PlayState.ship.x - PlayState.ship.width / 2) && bossbomb.x <= (PlayState.ship.x + PlayState.ship.width / 2) &&
+      bossbomb.y >= (PlayState.ship.y - PlayState.ship.height / 2) && bossbomb.y <= (PlayState.ship.y + PlayState.ship.height / 2)) {
+      PlayState.bossbombs.splice(i--, 1);
+      game.lives--;
+      game.sounds.playSound('explosion');
+    }
+  });
   //  Check for invader/ship collisions.
   this.invaders.map(function(invader) {
     if ((invader.x + invader.width / 2) > (PlayState.ship.x - PlayState.ship.width / 2) &&
