@@ -342,6 +342,7 @@ function PlayState(config, level) {
   this.bombs = [];
   this.boss = {};
   this.bossbombs = [];
+  this.bossexplosion = [];
 }
 
 PlayState.prototype.enter = function(game) {
@@ -383,6 +384,9 @@ PlayState.prototype.enter = function(game) {
   // Create Boss
   var boss = new Boss((game.width / 2), 200, game.stage);
   this.boss = boss;
+
+  //end count
+  this.endcount = 0;
 };
 
 PlayState.prototype.update = function(game, dt) {
@@ -514,6 +518,36 @@ PlayState.prototype.update = function(game, dt) {
       PlayState.bossbombs.splice(i--, 1);
     }
   });
+  //explosion boss
+  this.bossexplosion.map(function(bossexplosion, i) {
+    //  If the rocket has gone off the screen remove it.
+    switch (bossexplosion.direction) {
+      case 0:
+        bossexplosion.y += dt * bossexplosion.velocity;
+        bossexplosion.x -= dt * bossexplosion.velocity;
+        break;
+      case 1:
+        bossexplosion.y += dt * bossexplosion.velocity;
+        break;
+      case 2:
+        bossexplosion.y += dt * bossexplosion.velocity;
+        bossexplosion.x += dt * bossexplosion.velocity;
+        break;
+      case 3:
+        bossexplosion.y -= dt * bossexplosion.velocity;
+        bossexplosion.x -= dt * bossexplosion.velocity;
+        break;
+      case 4:
+        bossexplosion.y -= dt * bossexplosion.velocity;
+        break;
+      case 5:
+        bossexplosion.y -= dt * bossexplosion.velocity;
+        bossexplosion.x += dt * bossexplosion.velocity;
+        break;
+      default:
+        break;
+    }
+  });
 
   //  If we've hit the bottom, it's game over.
   if (hitBottom) {
@@ -554,7 +588,8 @@ PlayState.prototype.update = function(game, dt) {
   });
   if (shoted_) {
     this.boss.hp = PlayState.boss.hp - 20;
-    if (PlayState.boss.hp === 0) {
+    if (PlayState.boss.hp < 0) {
+      this.boss.hp = 0;
       //game end
     }
     game.sounds.playSound('bang');
@@ -619,8 +654,26 @@ PlayState.prototype.update = function(game, dt) {
   if (game.lives <= 0) {
     game.moveToState(new GameOverState());
   }
-  //  Check for victory
-  if (PlayState.invaders.length === 0 && PlayState.boss.hp === 0) {
+
+  //  Check for victory first
+  if (PlayState.boss.hp === 0 && this.endcount === 0) {
+    //bome remove
+    this.bossbombs = [];
+    this.bombs = [];
+    //explosion boss
+    for (var ro = 0; ro < 6; ro++) {
+      PlayState.bossexplosion.push(new ExplosionBoss(PlayState.boss.x, PlayState.boss.y + PlayState.boss.height / 2, ro,
+        PlayState.bombMinVelocity + Math.random() * (PlayState.bombMaxVelocity - PlayState.bombMinVelocity)));
+    }
+  }
+  //  Check for victory last
+  if (PlayState.boss.hp === 0) {
+    this.endcount += 1;
+    console.log(this.endcount);
+  }
+  if (PlayState.boss.hp === 0 && this.endcount === 200) {
+    //delay game end
+    PlayState.bossexplosion = [];
     game.score += PlayState.level * 50;
     game.level += 1;
     game.moveToState(new LevelIntroState(game.level));
@@ -644,13 +697,19 @@ PlayState.prototype.draw = function(game, dt, ctx) {
     ctx.fillRect(invader.x - invader.width / 2, invader.y - invader.height / 2, invader.width, invader.height);
   });
   // Draw Boss.
-  var boss = this.boss;
-  ctx.fillStyle = '#ff'+ Math.floor(boss.hp/11).toString() +'11';
-  ctx.fillRect(boss.x - boss.width / 2, boss.y - boss.height / 2, boss.width, boss.height);
+  if (this.boss.hp > 0) {
+    ctx.fillStyle = 'rgb(255,'+Math.floor(boss.hp/4).toString()+',11)';
+    ctx.fillRect(boss.x - boss.width / 2, boss.y - boss.height / 2, boss.width, boss.height);
+  }
   //  Draw bossbombs.
   ctx.fillStyle = '#00ffff';
-  this.bossbombs.map(function(bomb) {
-    ctx.fillRect(bomb.x - 2, bomb.y - 2, 6, 6);
+  this.bossbombs.map(function(bossbomb) {
+    ctx.fillRect(bossbomb.x - 2, bossbomb.y - 2, 6, 6);
+  });
+  //  Draw bossexplosion.
+  ctx.fillStyle = '#00ffff';
+  this.bossexplosion.map(function(bosssplit) {
+    ctx.fillRect(bosssplit.x - 2, bosssplit.y - 2, 20, 10);
   });
   //  Draw bombs.
   ctx.fillStyle = '#ff5555';
@@ -836,6 +895,18 @@ function Bomb(x, y, velocity) {
 
 */
 function BossBomb(x, y, direction,  velocity) {
+  this.x = x;
+  this.y = y;
+  this.direction = direction;
+  this.velocity = velocity;
+}
+/*
+    ExplosionBoss
+
+
+
+*/
+function ExplosionBoss(x, y, direction,  velocity) {
   this.x = x;
   this.y = y;
   this.direction = direction;
