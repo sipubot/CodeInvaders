@@ -19,7 +19,16 @@
 
     Listen for 'gameWon' or 'gameLost' events to handle the game
     ending.
+
 */
+/*
+   Add Object
+
+   Boss
+
+   Stage Moving Json or Script;
+*/
+
 //
 
 function GameImages() {
@@ -45,7 +54,7 @@ GameImages.prototype.keycaps = function() {
   //image list
   //var imageFilejson = "images.json";
   var keycaps = [];
-  GameImages.keycapList.map(function(keycapImageCode, i) {
+  GameImages.keycapList.forEach(function(keycapImageCode, i) {
     var keycap = new Image();
     keycap.src = 'data:image/png;base64,' + keycapImageCode;
     keycaps.push(keycap);
@@ -256,7 +265,7 @@ WelcomeState.prototype.draw = function(game, dt, ctx) {
   ctx.font = "16px Arial";
   ctx.fillText("Select Stage", game.width / 2, game.height / 2);
   //draw stage select box
-  game.stageName.map(function(stage, i) {
+  game.stageName.forEach(function(stage, i) {
     if (game.stage === i) {
       ctx.strokeStyle = "#ffffff";
       ctx.fillStyle = '#ffffff';
@@ -412,7 +421,7 @@ PlayState.prototype.update = function(game, dt) {
     this.ship.x = game.gameBounds.right;
   }
   //  Move each bomb.
-  this.bombs.map(function(bomb, i) {
+  this.bombs.forEach(function(bomb, i) {
     bomb.y += dt * bomb.velocity;
     //  If the rocket has gone off the screen remove it.
     if (bomb.y > PlayState.height) {
@@ -420,7 +429,7 @@ PlayState.prototype.update = function(game, dt) {
     }
   });
   //  Move each rocket.
-  this.rockets.map(function(rocket, i) {
+  this.rockets.forEach(function(rocket, i) {
     rocket.y -= dt * rocket.velocity;
     //  If the rocket has gone off the screen remove it.
     if (rocket.y < 0) {
@@ -432,7 +441,7 @@ PlayState.prototype.update = function(game, dt) {
   var hitLeft = false,
     hitRight = false,
     hitBottom = false;
-  this.invaders.map(function(invader) {
+  this.invaders.forEach(function(invader) {
     var newx = invader.x + PlayState.invaderVelocity.x * dt;
     var newy = invader.y + PlayState.invaderVelocity.y * dt;
     if (hitLeft === false && newx < game.gameBounds.left) {
@@ -472,31 +481,17 @@ PlayState.prototype.update = function(game, dt) {
     this.boss.movedirection = -1;
   }
   this.boss.x = this.boss.x - dt * this.boss.movedirection * 30;
-  //boss bomb moving
   //  Move each bomb.
-  this.bossbombs.map(function(bossbomb, i) {
-    //  If the rocket has gone off the screen remove it.
-    switch (bossbomb.direction) {
-      case 0:
-        bossbomb.y += dt * bossbomb.velocity;
-        bossbomb.x -= dt * bossbomb.velocity;
-        break;
-      case 1:
-        bossbomb.y += dt * bossbomb.velocity;
-        break;
-      case 2:
-        bossbomb.y += dt * bossbomb.velocity;
-        bossbomb.x += dt * bossbomb.velocity;
-        break;
-      default:
-        break;
-    }
+  this.bossbombs.forEach(function(bossbomb, i) {
+    bossbomb.bombMove(dt, game.stage);
     if (bossbomb.y > game.height || bossbomb.x > game.width || bossbomb.x < 0 || bossbomb.y < 0) {
       PlayState.bossbombs.splice(i--, 1);
     }
   });
+
+
   //explosion boss
-  this.bossexplosion.map(function(bossexplosion, i) {
+  this.bossexplosion.forEach(function(bossexplosion, i) {
     //  If the rocket has gone off the screen remove it.
     switch (bossexplosion.direction) {
       case 0:
@@ -529,10 +524,10 @@ PlayState.prototype.update = function(game, dt) {
   //  If we've hit the bottom, it's game over.
   if (hitBottom) {}
   //  Check for rocket/invader collisions.
-  this.invaders.map(function(invader, i) {
+  this.invaders.forEach(function(invader, i) {
     var bang = false;
 
-    PlayState.rockets.map(function(rocket, j) {
+    PlayState.rockets.forEach(function(rocket, j) {
       if (rocket.x >= (invader.x - invader.width / 2) && rocket.x <= (invader.x + invader.width / 2) &&
         rocket.y >= (invader.y - invader.height / 2) && rocket.y <= (invader.y + invader.height / 2)) {
         //  Remove the rocket, set 'bang' so we don't process
@@ -551,7 +546,7 @@ PlayState.prototype.update = function(game, dt) {
   var boss_ = PlayState.boss;
   var shoted_ = false;
 
-  this.rockets.map(function(rocket, i) {
+  this.rockets.forEach(function(rocket, i) {
     if (rocket.x >= (boss_.x - boss_.width / 2) && rocket.x <= (boss_.x + boss_.width / 2) &&
       rocket.y >= (boss_.y - boss_.height / 2) && rocket.y <= (boss_.y + boss_.height / 2)) {
       //  Remove the rocket, set 'bang' so we don't process
@@ -572,23 +567,18 @@ PlayState.prototype.update = function(game, dt) {
   //Bossbombshot
   if (PlayState.boss.hp > 0 && PlayState.bossbombs.length === 0) {
     //  Fire!  speed modifi needs
-    PlayState.bossbombs.push(new BossBomb(PlayState.boss.x, PlayState.boss.y + PlayState.boss.height / 2, 0,
-      PlayState.bombMinVelocity + Math.random() * (PlayState.bombMaxVelocity - PlayState.bombMinVelocity)));
-    PlayState.bossbombs.push(new BossBomb(PlayState.boss.x, PlayState.boss.y + PlayState.boss.height / 2, 1,
-      PlayState.bombMinVelocity + Math.random() * (PlayState.bombMaxVelocity - PlayState.bombMinVelocity)));
-    PlayState.bossbombs.push(new BossBomb(PlayState.boss.x, PlayState.boss.y + PlayState.boss.height / 2, 2,
-      PlayState.bombMinVelocity + Math.random() * (PlayState.bombMaxVelocity - PlayState.bombMinVelocity)));
-
+    PlayState.bossbombs = PlayState.boss.bossbombsshot(PlayState.boss.x, PlayState.boss.y + PlayState.boss.height / 2,
+      PlayState.bombMinVelocity + Math.random() * (PlayState.bombMaxVelocity - PlayState.bombMinVelocity) * 5);
   }
   //  Find all of the front rank invaders.
   var frontRankInvaders = {};
-  this.invaders.map(function(invader) {
+  this.invaders.forEach(function(invader) {
     if (!frontRankInvaders[invader.file] || frontRankInvaders[invader.file].rank < invader.rank) {
       frontRankInvaders[invader.file] = invader;
     }
   });
   //  Give each front rank invader a chance to drop a bomb.
-  Object.keys(frontRankInvaders).map(function(key, index) {
+  Object.keys(frontRankInvaders).forEach(function(key, index) {
     var chance = PlayState.bombRate * dt;
     if (chance > Math.random()) {
       //  Fire!
@@ -596,8 +586,10 @@ PlayState.prototype.update = function(game, dt) {
         PlayState.bombMinVelocity + Math.random() * (PlayState.bombMaxVelocity - PlayState.bombMinVelocity)));
     }
   });
+
+
   //  Check for bomb/ship collisions.
-  this.bombs.map(function(bomb, i) {
+  this.bombs.forEach(function(bomb, i) {
     if (bomb.x >= (PlayState.ship.x - PlayState.ship.width / 2) && bomb.x <= (PlayState.ship.x + PlayState.ship.width / 2) &&
       bomb.y >= (PlayState.ship.y - PlayState.ship.height / 2) && bomb.y <= (PlayState.ship.y + PlayState.ship.height / 2)) {
       PlayState.bombs.splice(i--, 1);
@@ -606,7 +598,7 @@ PlayState.prototype.update = function(game, dt) {
     }
   });
   //  Check for bomb/ship collisions.
-  this.bossbombs.map(function(bossbomb, i) {
+  this.bossbombs.forEach(function(bossbomb, i) {
     if (bossbomb.x >= (PlayState.ship.x - PlayState.ship.width / 2) && bossbomb.x <= (PlayState.ship.x + PlayState.ship.width / 2) &&
       bossbomb.y >= (PlayState.ship.y - PlayState.ship.height / 2) && bossbomb.y <= (PlayState.ship.y + PlayState.ship.height / 2)) {
       PlayState.bossbombs.splice(i--, 1);
@@ -619,7 +611,6 @@ PlayState.prototype.update = function(game, dt) {
     game.moveToState(new GameOverState());
     PlayState.ship.hp = PlayState.ship.inithp;
   }
-
   //  Check for victory first
   if (PlayState.boss.hp === 0 && this.endcount === 0) {
     //bome remove
@@ -656,7 +647,7 @@ PlayState.prototype.draw = function(game, dt, ctx) {
   //gameImages.keyboard
   //  Draw invaders.
   ctx.fillStyle = '#006600';
-  this.invaders.map(function(invader) {
+  this.invaders.forEach(function(invader) {
     ctx.fillText("Test", invader.x, invader.y);
     ctx.fillRect(invader.x - invader.width / 2, invader.y - invader.height / 2, invader.width, invader.height);
   });
@@ -668,22 +659,22 @@ PlayState.prototype.draw = function(game, dt, ctx) {
   }
   //  Draw bossbombs.
   ctx.fillStyle = '#00ffff';
-  this.bossbombs.map(function(bossbomb) {
+  this.bossbombs.forEach(function(bossbomb) {
     ctx.fillRect(bossbomb.x - 2, bossbomb.y - 2, 6, 6);
   });
   //  Draw bossexplosion.
   ctx.fillStyle = '#00ffff';
-  this.bossexplosion.map(function(bosssplit) {
+  this.bossexplosion.forEach(function(bosssplit) {
     ctx.fillRect(bosssplit.x - 2, bosssplit.y - 2, 20, 10);
   });
   //  Draw bombs.
   ctx.fillStyle = '#ff5555';
-  this.bombs.map(function(bomb) {
+  this.bombs.forEach(function(bomb) {
     ctx.fillRect(bomb.x - 2, bomb.y - 2, 4, 4);
   });
   //  Draw rockets.
   ctx.fillStyle = '#ff0000';
-  this.rockets.map(function(rocket) {
+  this.rockets.forEach(function(rocket) {
     ctx.fillRect(rocket.x, rocket.y - 2, 8, 8);
     //rocket image render differ
     ctx.drawImage(gameImages.keycaps[0], rocket.x, rocket.y - 2, 8, 8);
@@ -870,6 +861,24 @@ function BossBomb(x, y, direction, velocity) {
   this.y = y;
   this.direction = direction;
   this.velocity = velocity;
+
+  this.bombMove = function(dt, stage) {
+    switch (this.direction) {
+      case 0:
+        this.x -= dt * this.velocity;
+        this.y += dt * this.velocity;
+        break;
+      case 1:
+        this.y += dt * this.velocity;
+        break;
+      case 2:
+        this.y += dt * this.velocity;
+        this.x += dt * this.velocity;
+        break;
+      default:
+        break;
+    }
+  };
 }
 /*
     ExplosionBoss
@@ -912,6 +921,14 @@ function Boss(x, y, stage) {
   this.movedirection = -1;
   this.width = 80;
   this.height = 40;
+  this.bossbombsshot = function(x, y, velo, stage) {
+    var retBomb = [];
+    retBomb.push(new BossBomb(x, y, 0, velo));
+    retBomb.push(new BossBomb(x, y, 1, velo));
+    retBomb.push(new BossBomb(x, y, 2, velo));
+    return retBomb;
+  };
+
 }
 
 /*
