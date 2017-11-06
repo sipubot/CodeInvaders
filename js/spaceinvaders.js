@@ -69,7 +69,7 @@ gameImages.keycaps();
 function Game() {
   //  Set the initial config.
   this.config = {
-    bombRate: 0.30,
+    bombRate: 0.20,
     bombMinVelocity: 50,
     bombMaxVelocity: 50,
     invaderInitialVelocity: 25,
@@ -85,7 +85,8 @@ function Game() {
     invaderFiles: 10,
     shipSpeed: 120,
     levelDifficultyMultiplier: 0.2,
-    pointsPerInvader: 5
+    pointsPerInvader: 5,
+    pointsPerQuiz : 50
   };
   //  All state is in the variables below.
   this.width = 0;
@@ -99,7 +100,7 @@ function Game() {
   this.intervalId = 0;
   this.score = 0;
   this.stage = 0;
-  this.stageName = ['ASSEMBLY', 'C', 'JAVA', 'JAVASCRIPT'];
+  this.stageName = ['ASSEMBLY', 'C', 'SHELL', 'JAVASCRIPT'];
   this.level = 1;
   //  The state stack.
   this.stateStack = [];
@@ -219,11 +220,11 @@ Game.prototype.stop = function Stop() {
 };
 
 //  Inform the game a key is down.
-Game.prototype.keyDown = function(keyCode) {
+Game.prototype.keyDown = function(keyCode, e) {
   this.pressedKeys[keyCode] = true;
   //  Delegate to the current state too.
   if (this.currentState() && this.currentState().keyDown) {
-    this.currentState().keyDown(this, keyCode);
+    this.currentState().keyDown(this, keyCode, e);
   }
 };
 
@@ -342,12 +343,18 @@ function PlayState(config, level) {
   this.lastRocketTime = null;
   //  Game entities.
   this.ship = null;
+  this.typeBox = null;
+  this.inputText = '';
+  this.inputCursor = 0;
   this.invaders = [];
   this.rockets = [];
   this.bombs = [];
   this.boss = {};
   this.bossbombs = [];
   this.bossexplosion = [];
+  this.quizs = [];
+  this.quizarrow = null;
+  this.quizcorrect = false;
 }
 
 PlayState.prototype.enter = function(game) {
@@ -387,11 +394,18 @@ PlayState.prototype.enter = function(game) {
   this.invaderNextVelocity = null;
 
   // Create Boss
-  var boss = new Boss((game.width / 2), 200, game.stage);
+  var boss = new Boss((game.width / 2), 100, game.stage);
   this.boss = boss;
+
+  //typing Box
+  var typebox =new TypeBox(80,50);
+  this.typeBox = typebox;
 
   //end count
   this.endcount = 0;
+
+  //make quiz list
+  this.quizs = [["ddd","ddd"],["aa","aa"],["vv","vv"],["bb","bb"],["aa","aa"]];
 };
 
 PlayState.prototype.update = function(game, dt) {
@@ -587,6 +601,28 @@ PlayState.prototype.update = function(game, dt) {
     }
   });
 
+  // quiz arrow shot
+  if (this.quizarrow === null && this.quizs.length > 0) { 
+    if(PlayState.bombRate * dt * 0.1 >  Math.random()) {
+      var q = new Quiz(100,200,this.quizs[0][0],this.quizs[0][1]);
+      this.quizs.shift();
+      this.quizarrow = q;
+    }
+  }
+  //quiz arrow moving
+  if (this.quizarrow !== null) {
+    this.quizarrow.y += dt * 5;
+    if (this.quizcorrect) {
+      game.score += PlayState.config.pointsPerQuiz;
+      this.quizcorrect = false;
+      this.quizarrow = null;
+    }
+    if (this.quizarrow.y > game.gameBounds.bottom - 100) {
+      PlayState.ship.hp -= PlayState.config.pointsPerQuiz;
+      this.quizcorrect = false;
+      this.quizarrow = null;
+    }
+  }
 
   //  Check for bomb/ship collisions.
   this.bombs.forEach(function(bomb, i) {
@@ -648,7 +684,6 @@ PlayState.prototype.draw = function(game, dt, ctx) {
   //  Draw invaders.
   ctx.fillStyle = '#006600';
   this.invaders.forEach(function(invader) {
-    ctx.fillText("Test", invader.x, invader.y);
     ctx.fillRect(invader.x - invader.width / 2, invader.y - invader.height / 2, invader.width, invader.height);
   });
   // Draw Boss.
@@ -679,6 +714,27 @@ PlayState.prototype.draw = function(game, dt, ctx) {
     //rocket image render differ
     ctx.drawImage(gameImages.keycaps[0], rocket.x, rocket.y - 2, 8, 8);
   });
+  // Draw type box 
+  ctx.fillStyle = '#dddddd';
+  ctx.strokeRect(game.gameBounds.right / 2 - this.typeBox.x ,game.gameBounds.bottom + this.typeBox.y, this.typeBox.width, this.typeBox.height );
+  ctx.textAlign = 'left';
+  ctx.fillText(this.inputText, game.gameBounds.right / 2 - this.typeBox.x ,game.gameBounds.bottom + this.typeBox.y + 12);
+  // Draw type cursor
+  this.inputCursor += dt;
+  if (this.inputCursor > 0.5) {
+    ctx.fillText("_", game.gameBounds.right / 2 - this.typeBox.x +  this.inputText.length * 5,game.gameBounds.bottom + this.typeBox.y + 12);
+  }
+  if (this.inputCursor > 1) {
+    this.inputCursor = 0;
+  }
+  // Draw quiz
+  if (this.quizarrow !== null) {
+    ctx.fillStyle = '#aaaaaa';
+    ctx.globalAlpha = 0.3;
+    ctx.fillRect(this.quizarrow.x,this.quizarrow.y, this.quizarrow.x + this.quizarrow.quiz.length * 6, 10);
+    ctx.globalAlpha = 1.0;
+    ctx.fillText(this.quizarrow.quiz, this.quizarrow.x, this.quizarrow.y);
+  }
 
   //  Draw info.
   var textYpos = game.gameBounds.bottom + ((game.height - game.gameBounds.bottom) / 2) + 14 / 2;
@@ -704,14 +760,27 @@ PlayState.prototype.draw = function(game, dt, ctx) {
 
 };
 
-PlayState.prototype.keyDown = function(game, keyCode) {
+PlayState.prototype.keyDown = function(game, keyCode, e) {
   if (keyCode == 32) {
     //  Fire!
     this.fireRocket();
   }
-  if (keyCode == 80) {
+  if (keyCode == 27) {
     //  Push the pause state.
     game.pushState(new PauseState());
+  }
+  if (keyCode >= 41) {
+    this.inputText = this.inputText + e.key;
+  }
+  if (keyCode == 8) {
+    this.inputText = this.inputText.substring(0,  this.inputText.length - 1);
+  }
+  //trigger key 
+  if (keyCode == 13) {
+    if (this.inputText === this.quizarrow.answer) {
+      this.quizcorrect = true;
+    }
+    this.inputText = '';
   }
 };
 
@@ -730,6 +799,11 @@ PlayState.prototype.fireRocket = function() {
     game.sounds.playSound('shoot');
   }
 };
+
+PlayState.prototype.fireCommend = function() {
+  //  Excution commend 
+};
+
 
 function PauseState() {
 
@@ -929,6 +1003,22 @@ function Boss(x, y, stage) {
     return retBomb;
   };
 
+}
+
+function TypeBox(x, y) {
+  this.x = x;
+  this.y = y;
+  //get init hp need
+  this.width = 250;
+  this.height = 20;
+
+}
+
+function Quiz(x, y, quiz, answer) {
+  this.x = x;
+  this.y = y;
+  this.quiz = quiz;
+  this.answer = answer;
 }
 
 /*
