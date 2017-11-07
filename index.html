@@ -16,27 +16,28 @@
             padding: 0;
             overflow: hidden;
         }
+
         .stage {
-          width: 80%;
-          margin: 0 auto;
-          list-style: none;
-          -ms-box-orient: horizontal;
-          display: -webkit-box;
-          display: -moz-box;
-          display: -ms-flexbox;
-          display: -moz-flex;
-          display: -webkit-flex;
-          display: flex;
+            width: 80%;
+            margin: 0 auto;
+            list-style: none;
+            -ms-box-orient: horizontal;
+            display: -webkit-box;
+            display: -moz-box;
+            display: -ms-flexbox;
+            display: -moz-flex;
+            display: -webkit-flex;
+            display: flex;
         }
 
-        .stage li{
-          text-align: center;
-          width: 80%;
-          margin: 0 auto;
-          padding-top: 5%;
-          padding-bottom: 5%;
-          border : 2px solid;
-          border-radius: 2px;
+        .stage li {
+            text-align: center;
+            width: 80%;
+            margin: 0 auto;
+            padding-top: 5%;
+            padding-bottom: 5%;
+            border: 2px solid;
+            border-radius: 2px;
         }
 
         #keycapfield {
@@ -64,7 +65,7 @@
             text-align: center;
             margin-left: auto;
             margin-right: auto;
-            bottom : 10%;
+            bottom: 10%;
         }
 
         #choicestage {
@@ -81,10 +82,12 @@
     </div>
     <div id="info">
         <p>Move with arrow keys, fire with the space bar. The invaders get faster and drop more bombs as you complete each level!</p>
-        <p><a id="muteLink" href="#" onclick="toggleMute()">mute</a> |
-            <a href="http://github.com/sipubot/codenvaders">codeinvaders on github</a> |
-            via <a href="http://github.com/dwmkerr/spaceinvaders">spaceinvaders on github</a>
+        <p>
+            <a id="muteLink" href="#" onclick="toggleMute()">mute</a> |
+            <a href="http://github.com/sipubot/codenvaders">codeinvaders on github</a> | via
+            <a href="http://github.com/dwmkerr/spaceinvaders">spaceinvaders on github</a>
     </div>
+    <script src="js/util.js"></script>
     <script src="js/keycapfield.js"></script>
     <script src="js/spaceinvaders.js"></script>
     <script>
@@ -100,33 +103,50 @@
         canvas.width = 600;
         canvas.height = 800;
 
-        //  Create the game.
-        var game = new Game();
+        /*
+        Quiz Json pre load
+        */
+        var STAGEDATA = {};
+        var game;
+        loadJSON('js/stageQuiz.json', function (data) {
+            //stage name sync after
+            STAGEDATA = data;
+            RunGame();
+        }, function (xhr) {
+            console.log('load failed...')
+            return false;
+        });
 
-        //  Initialise it with the game canvas. & background.
-        game.initialise(canvas);
-        game.backgroundScreen = keycapfield;
+        function RunGame() {
+            //  Create the game.
+            game = new Game();
 
-        //  Start the game.
-        game.start();
+            //  Initialise it with the game canvas. & background.
+            game.initialise(canvas);
+            game.backgroundScreen = keycapfield;
 
-        //  Listen for keyboard events.
-        window.addEventListener("keydown", function keydown(e) {
-            var keycode = e.which || window.event.keycode;
-            //  Supress further processing of left/right/space (37/29/32)
-            if (keycode == 37 || keycode == 39 || keycode == 32) {
-                e.preventDefault();
+            //  Start the game.
+            game.start();
+
+            //  Listen for keyboard events.
+            window.addEventListener("keydown", function keydown(e) {
+                var keycode = e.which || window.event.keycode;
+                //  Supress further processing of left/right/space (37/29/32)
+                if (keycode == 37 || keycode == 39 || keycode == 32) {
+                    e.preventDefault();
+                }
+                game.keyDown(keycode, e);
+            });
+            window.addEventListener("keyup", function keydown(e) {
+                var keycode = e.which || window.event.keycode;
+                game.keyUp(keycode);
+            });
+
+            function toggleMute() {
+                game.mute();
+                document.getElementById("muteLink").innerText = game.sounds.mute ? "unmute" : "mute";
             }
-            game.keyDown(keycode, e);
-        });
-        window.addEventListener("keyup", function keydown(e) {
-            var keycode = e.which || window.event.keycode;
-            game.keyUp(keycode);
-        });
 
-        function toggleMute() {
-            game.mute();
-            document.getElementById("muteLink").innerText = game.sounds.mute ? "unmute" : "mute";
         }
     </script>
 </body>

@@ -1,0 +1,118 @@
+{
+    "ASSEMBLY": {
+        "Stage1": [{
+            "quiz": "Using Addressing Memory keyword?",
+            "answer": "mov",
+            "point": 10
+        }, {
+            "quiz": "Integer Addition keyword?",
+            "answer": "add",
+            "point": 10
+        }, {
+            "quiz": "Integer Subtraction keyword?",
+            "answer": "sub",
+            "point": 10
+        }, {
+            "quiz": "xor 10011000, 10011000;",
+            "answer": "00000000",
+            "point": 10
+        }],
+        "Stage2": [
+
+        ],
+        "Stage3": [
+
+        ]
+
+    },
+    "C": {
+        "Stage1": [{
+            "quiz": "testload \n split test \n good?",
+            "answer": "ok",
+            "point": 10
+        }, {
+            "quiz": "test",
+            "answer": "test",
+            "point": 10
+        }, {
+            "quiz": "tets",
+            "answer": "tsets",
+            "point": 10
+        }, {
+            "quiz": "tsetse",
+            "answer": "tsetsestse",
+            "point": 10
+        }, {
+            "quiz": "tsetset",
+            "answer": "tsetsets",
+            "point": 10
+        }],
+        "Stage2": [
+
+        ],
+        "Stage3": [
+
+        ]
+
+    },
+    "SHELL": {
+        "Stage1": [{
+            "quiz": "testload \n split test \n good?",
+            "answer": "ok",
+            "point": 10
+        }, {
+            "quiz": "test",
+            "answer": "test",
+            "point": 10
+        }, {
+            "quiz": "tets",
+            "answer": "tsets",
+            "point": 10
+        }, {
+            "quiz": "tsetse",
+            "answer": "tsetsestse",
+            "point": 10
+        }, {
+            "quiz": "tsetset",
+            "answer": "tsetsets",
+            "point": 10
+        }],
+        "Stage2": [
+
+        ],
+        "Stage3": [
+
+        ]
+
+    },
+    "JAVASCRIPT": {
+        "Stage1": [{
+            "quiz": "testload \n split test \n good?",
+            "answer": "ok",
+            "point": 10
+        }, {
+            "quiz": "test",
+            "answer": "test",
+            "point": 10
+        }, {
+            "quiz": "tets",
+            "answer": "tsets",
+            "point": 10
+        }, {
+            "quiz": "tsetse",
+            "answer": "tsetsestse",
+            "point": 10
+        }, {
+            "quiz": "tsetset",
+            "answer": "tsetsets",
+            "point": 10
+        }],
+        "Stage2": [
+
+        ],
+        "Stage3": [
+
+        ]
+
+    }
+}
