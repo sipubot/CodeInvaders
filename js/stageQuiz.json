@@ -25,26 +25,50 @@
         ]
 
     },
-    "C": {
+    "BASH": {
         "Stage1": [{
-            "quiz": "testload \n split test \n good?",
-            "answer": "ok",
+            "quiz": "list of \n in directory?",
+            "answer": "ls",
             "point": 10
         }, {
-            "quiz": "test",
-            "answer": "test",
+            "quiz": "file copy",
+            "answer": "cp",
             "point": 10
         }, {
-            "quiz": "tets",
-            "answer": "tsets",
+            "quiz": "file owner ship chaging ?",
+            "answer": "chmod",
             "point": 10
         }, {
-            "quiz": "tsetse",
-            "answer": "tsetsestse",
+            "quiz": "Quit terminal",
+            "answer": "exit",
             "point": 10
         }, {
-            "quiz": "tsetset",
-            "answer": "tsetsets",
+            "quiz": "find line in file",
+            "answer": "grep",
+            "point": 10
+        }, {
+            "quiz": "local ip adress check and \n netmask show",
+            "answer": "ifconfig",
+            "point": 10
+        }, {
+            "quiz": "all HDD capacity check",
+            "answer": "df",
+            "point": 10
+        }, {
+            "quiz": "make directory",
+            "answer": "mkdir",
+            "point": 10
+        }, {
+            "quiz": "delete file",
+            "answer": "rm",
+            "point": 10
+        }, {
+            "quiz": "sub Directory capacity check",
+            "answer": "du",
+            "point": 10
+        }, {
+            "quiz": "cpu using table",
+            "answer": "top",
             "point": 10
         }],
         "Stage2": [
@@ -55,17 +79,17 @@
         ]
 
     },
-    "SHELL": {
+    "RUST": {
         "Stage1": [{
-            "quiz": "testload \n split test \n good?",
-            "answer": "ok",
+            "quiz": "rust \n mutable \n keyword?",
+            "answer": "mut",
             "point": 10
         }, {
-            "quiz": "test",
-            "answer": "test",
+            "quiz": "type Chaging keyword?",
+            "answer": "as",
             "point": 10
         }, {
-            "quiz": "tets",
+            "quiz": "____",
             "answer": "tsets",
             "point": 10
         }, {
@@ -87,24 +111,28 @@
     },
     "JAVASCRIPT": {
         "Stage1": [{
-            "quiz": "testload \n split test \n good?",
-            "answer": "ok",
+            "quiz": "initial value\n Modify lock?",
+            "answer": "const",
             "point": 10
         }, {
-            "quiz": "test",
-            "answer": "test",
+            "quiz": "get HTML element by ID \n Method Name?",
+            "answer": "getElementById",
             "point": 10
         }, {
-            "quiz": "tets",
-            "answer": "tsets",
+            "quiz": "Logging to console window \n Method Name?",
+            "answer": "console.log",
             "point": 10
         }, {
-            "quiz": "tsetse",
-            "answer": "tsetsestse",
+            "quiz": "using $ Plug-In or Using this Keyword \n ______?",
+            "answer": "jQuery",
             "point": 10
         }, {
-            "quiz": "tsetset",
-            "answer": "tsetsets",
+            "quiz": "function exam__ {}; \n Complete Blank.",
+            "answer": "()",
+            "point": 10
+        }, {
+            "quiz": "make It true \n __2 === 3)",
+            "answer": "1+",
             "point": 10
         }],
         "Stage2": [
