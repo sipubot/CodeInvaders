@@ -100,7 +100,7 @@ function Game() {
   this.intervalId = 0;
   this.score = 0;
   this.stage = 0;
-  this.stageName = ['ASSEMBLY', 'C', 'SHELL', 'JAVASCRIPT'];
+  this.stageName = ['ASSEMBLY', 'BASH', 'RUST', 'JAVASCRIPT'];
   this.level = 1;
   //  The state stack.
   this.stateStack = [];
